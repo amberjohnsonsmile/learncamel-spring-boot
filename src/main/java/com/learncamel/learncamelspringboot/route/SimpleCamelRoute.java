@@ -17,7 +17,12 @@ public class SimpleCamelRoute extends RouteBuilder {
 
         from("{{startRoute}}")
                 .log("Timer Invoked and the body " + environment.getProperty("message"))
-                .pollEnrich("{{fromRoute}}")
+                .choice()
+                    // Really don't like this. We shouldn't have to design the code around the test
+                    .when((header("env").isNotEqualTo("mock")))
+                        .pollEnrich("{{fromRoute}}")
+                    .otherwise()
+                        .log("mock env flow and the body is ${body}")
                 .to("{{toRoute1}}");
     }
 }
