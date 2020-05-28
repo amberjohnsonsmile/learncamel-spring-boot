@@ -23,6 +23,7 @@ public class SimpleCamelRoute extends RouteBuilder {
                         .pollEnrich("{{fromRoute}}")
                     .otherwise()
                         .log("mock env flow and the body is ${body}")
+                    .end()
                 .to("{{toRoute1}}");
     }
 }
