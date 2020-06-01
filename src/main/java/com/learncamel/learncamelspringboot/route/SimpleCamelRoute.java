@@ -1,10 +1,12 @@
 package com.learncamel.learncamelspringboot.route;
 
+import com.learncamel.learncamelspringboot.config.DbConfig;
 import com.learncamel.learncamelspringboot.domain.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.spi.DataFormat;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +14,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SimpleCamelRoute extends RouteBuilder {
 
+    @Qualifier("dataSource")
+    private final DbConfig dbConfig;
     private final Environment environment;
 
     public SimpleCamelRoute(Environment environment) {
         this.environment = environment;
+        this.dbConfig = new DbConfig();
     }
 
     public void configure() {
