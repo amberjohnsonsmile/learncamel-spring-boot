@@ -1,7 +1,10 @@
 package com.learncamel.learncamelspringboot.route;
 
+import com.learncamel.learncamelspringboot.domain.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
+import org.apache.camel.spi.DataFormat;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,8 @@ public class SimpleCamelRoute extends RouteBuilder {
 
         log.info("Starting the camel route");
 
+        DataFormat bindy = new BindyCsvDataFormat(Item.class);
+
         from("{{startRoute}}")
                 .log("Timer Invoked and the body " + environment.getProperty("message"))
                 .choice()
@@ -28,7 +33,12 @@ public class SimpleCamelRoute extends RouteBuilder {
                     .otherwise()
                         .log("mock env flow and the body is ${body}")
                     .end()
-                .to("{{toRoute1}}");
+                .to("{{toRoute1}}")
+                .unmarshal(bindy)
+                .log("The unmarshalled object is ${body}")
+                .split(body())
+                    .log("Record is ${body}")
+                .end();
 
         log.info("Ending the camel route");
     }
