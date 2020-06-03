@@ -2,6 +2,7 @@ package com.learncamel.learncamelspringboot.route;
 
 import com.learncamel.learncamelspringboot.config.DbConfig;
 import com.learncamel.learncamelspringboot.domain.Item;
+import com.learncamel.learncamelspringboot.process.BuildSQLProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
@@ -17,10 +18,12 @@ public class SimpleCamelRoute extends RouteBuilder {
     @Qualifier("dataSource")
     private final DbConfig dbConfig;
     private final Environment environment;
+    private final BuildSQLProcessor buildSQLProcessor;
 
     public SimpleCamelRoute(Environment environment) {
         this.environment = environment;
         this.dbConfig = new DbConfig();
+        this.buildSQLProcessor = new BuildSQLProcessor();
     }
 
     public void configure() {
@@ -43,6 +46,8 @@ public class SimpleCamelRoute extends RouteBuilder {
                 .log("The unmarshalled object is ${body}")
                 .split(body())
                     .log("Record is ${body}")
+                    .process(buildSQLProcessor)
+                    .to("jdbc:dataSource")
                 .end();
 
         log.info("Ending the camel route");

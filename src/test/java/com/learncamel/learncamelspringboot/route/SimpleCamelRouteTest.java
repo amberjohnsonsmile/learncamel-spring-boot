@@ -54,4 +54,22 @@ public class SimpleCamelRouteTest {
         assertTrue(outFile.exists());
     }
 
+    @Test
+    public void testMoveFile_ADD() throws InterruptedException {
+        String message = "type,sku#,itemdescription,price\n"
+                + "ADD,100,Samsung TV,500\n"
+                + "ADD,101,LG TV,500";
+        String fileName = "fileTest.txt";
+
+        // This starts the route
+        producerTemplate.sendBodyAndHeader(environment.getProperty("fromRoute"), message, Exchange.FILE_NAME, fileName);
+
+        // Wait for the file to be moved
+        Thread.sleep(3000);
+
+        // Assert it was moved successfully
+        File outFile = new File("data/output/" + fileName);
+        assertTrue(outFile.exists());
+    }
+
 }

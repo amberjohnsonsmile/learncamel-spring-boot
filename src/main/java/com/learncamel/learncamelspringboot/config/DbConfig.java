@@ -1,18 +1,25 @@
 package com.learncamel.learncamelspringboot.config;
 
 import javax.sql.DataSource;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @Configuration
 public class DbConfig {
 
+    @Autowired
+    private Environment env;
+
     @Bean(name = "dataSource")
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource customDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(env.getProperty("spring.datasource.driverClassName"));
+        dataSource.setUrl(env.getProperty("spring.datasource.url"));
+
+        return dataSource;
     }
 
 }
