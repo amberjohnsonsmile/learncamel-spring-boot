@@ -19,11 +19,13 @@ public class SimpleCamelRoute extends RouteBuilder {
     private final DbConfig dbConfig;
     private final Environment environment;
     private final BuildSQLProcessor buildSQLProcessor;
+    private final SuccessProcessor successProcessor;
 
     public SimpleCamelRoute(Environment environment) {
         this.environment = environment;
         this.dbConfig = new DbConfig();
         this.buildSQLProcessor = new BuildSQLProcessor();
+        this.successProcessor = new SuccessProcessor();
     }
 
     public void configure() {
@@ -47,8 +49,11 @@ public class SimpleCamelRoute extends RouteBuilder {
                 .split(body())
                     .log("Record is ${body}")
                     .process(buildSQLProcessor)
-                    .to("jdbc:dataSource")
-                .end();
+                    .to("{{toRoute2}}")
+                .end()
+            // Will only reach this if the route is successful
+            .process(successProcessor)
+            .to("{{toRoute3}}");
 
         log.info("Ending the camel route");
     }

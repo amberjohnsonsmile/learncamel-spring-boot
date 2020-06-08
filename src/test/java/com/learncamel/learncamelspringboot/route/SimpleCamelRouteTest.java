@@ -1,9 +1,12 @@
 package com.learncamel.learncamelspringboot.route;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.test.spring.CamelSpringBootRunner;
@@ -55,7 +58,7 @@ public class SimpleCamelRouteTest {
     }
 
     @Test
-    public void testMoveFile_ADD() throws InterruptedException {
+    public void testMoveFile_ADD() throws InterruptedException, IOException {
         String message = "type,sku#,itemdescription,price\n"
                 + "ADD,100,Samsung TV,500\n"
                 + "ADD,101,LG TV,500";
@@ -70,6 +73,11 @@ public class SimpleCamelRouteTest {
         // Assert it was moved successfully
         File outFile = new File("data/output/" + fileName);
         assertTrue(outFile.exists());
+
+        // Assert the success processor created the file
+        String outputMessage = "Data updated successfully";
+        String output = new String(Files.readAllBytes(Paths.get("data/output/success.txt")));
+        assertEquals(outputMessage, output);
     }
 
 }
