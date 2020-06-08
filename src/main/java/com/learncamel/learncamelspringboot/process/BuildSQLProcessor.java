@@ -15,12 +15,15 @@ public class BuildSQLProcessor implements Processor {
 
         Item item = (Item) exchange.getIn().getBody();
         log.info("Item in Processor is: " + item);
+        String tableName = "ITEMS";
 
         StringBuilder query = new StringBuilder();
         if (item.getTransactionType().equals("ADD")) {
-            query.append("INSERT INTO ITEMS (SKU, ITEM_DESCRIPTION, PRICE) VALUES ('" + item.getSku() + "','" + item
+            query.append("INSERT INTO " + tableName + " (SKU, ITEM_DESCRIPTION, PRICE) VALUES ('" + item.getSku() + "','" + item
                     .getItemDescription() + "'," + item.getPrice() + ")");
         } else if (item.getTransactionType().equals("UPDATE")) {
+            query.append("UPDATE " + tableName + " SET PRICE = " + item.getPrice());
+            query.append(" WHERE SKU = '" + item.getSku() + "'");
         } else if (item.getTransactionType().equals("DELETE")) {}
 
         log.info("Final query is: " + query);

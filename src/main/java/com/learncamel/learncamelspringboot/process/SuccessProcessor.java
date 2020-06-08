@@ -1,4 +1,4 @@
-package com.learncamel.learncamelspringboot.route;
+package com.learncamel.learncamelspringboot.process;
 
 import org.apache.camel.Exchange;
 
