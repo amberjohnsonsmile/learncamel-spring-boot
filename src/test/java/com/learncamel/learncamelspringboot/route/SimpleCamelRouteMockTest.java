@@ -34,6 +34,9 @@ public class SimpleCamelRouteMockTest {
     @EndpointInject("mock:output")
     private MockEndpoint mockEndpoint;
 
+    @EndpointInject("mock:output2")
+    private MockEndpoint mockEndpoint1;
+
     // Override this method
     @Autowired
     protected CamelContext createCamelContext() {
@@ -48,6 +51,26 @@ public class SimpleCamelRouteMockTest {
 
         mockEndpoint.expectedMessageCount(1);
         mockEndpoint.expectedBodiesReceived(message);
+
+        producerTemplate.sendBodyAndHeader(environment.getProperty("startRoute"), message, "env",
+                environment.getProperty("spring.profiles.active"));
+
+        mockEndpoint.assertIsSatisfied();
+    }
+
+    @Test
+    public void testMoveFileMockAndDb() throws InterruptedException {
+        String message = "type,sku#,itemdescription,price\n"
+                + "ADD,100,Samsung TV,500\n"
+                + "ADD,101,LG TV,500";
+
+        String outMessage = "Data updated successfully";
+
+        mockEndpoint.expectedMessageCount(1);
+        mockEndpoint.expectedBodiesReceived(message);
+        mockEndpoint1.expectedMessageCount(1);
+        mockEndpoint1.expectedBodiesReceived(outMessage);
+
 
         producerTemplate.sendBodyAndHeader(environment.getProperty("startRoute"), message, "env",
                 environment.getProperty("spring.profiles.active"));
