@@ -80,12 +80,33 @@ public class SimpleCamelRouteTest {
         assertEquals(outputMessage, output);
     }
 
-    // This test is failing, need to figure out why!
     @Test
     public void testMoveFile_UPDATE() throws InterruptedException, IOException {
         String message = "type,sku#,itemdescription,price\n"
                 + "UPDATE,100,Samsung TV,600";
         String fileName = "fileUpdate.txt";
+
+        // This starts the route
+        producerTemplate.sendBodyAndHeader(environment.getProperty("fromRoute"), message, Exchange.FILE_NAME, fileName);
+
+        // Wait for the file to be moved
+        Thread.sleep(3000);
+
+        // Assert it was moved successfully
+        File outFile = new File("data/output/" + fileName);
+        assertTrue(outFile.exists());
+
+        // Assert the success processor created the file
+        String outputMessage = "Data updated successfully";
+        String output = new String(Files.readAllBytes(Paths.get("data/output/success.txt")));
+        assertEquals(outputMessage, output);
+    }
+
+    @Test
+    public void testMoveFile_DELETE() throws InterruptedException, IOException {
+        String message = "type,sku#,itemdescription,price\n"
+                + "DELETE,100,Samsung TV,600";
+        String fileName = "fileDelete.txt";
 
         // This starts the route
         producerTemplate.sendBodyAndHeader(environment.getProperty("fromRoute"), message, Exchange.FILE_NAME, fileName);

@@ -24,7 +24,9 @@ public class BuildSQLProcessor implements Processor {
         } else if (item.getTransactionType().equals("UPDATE")) {
             query.append("UPDATE " + tableName + " SET PRICE = " + item.getPrice());
             query.append(" WHERE SKU = '" + item.getSku() + "'");
-        } else if (item.getTransactionType().equals("DELETE")) {}
+        } else if (item.getTransactionType().equals("DELETE")) {
+            query.append("DELETE FROM " + tableName + " WHERE SKU = '" + item.getSku() + "'");
+        }
 
         log.info("Final query is: " + query);
 
