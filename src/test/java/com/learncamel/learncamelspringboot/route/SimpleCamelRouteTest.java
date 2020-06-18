@@ -38,6 +38,7 @@ public class SimpleCamelRouteTest {
     public static void startCleanUp() throws IOException {
         FileUtils.cleanDirectory(new File("data/input"));
         FileUtils.deleteDirectory(new File("data/output"));
+        FileUtils.deleteDirectory(new File("data/input/error"));
     }
 
     @Test
@@ -99,8 +100,8 @@ public class SimpleCamelRouteTest {
         assertTrue(outFile.exists());
 
         // Assert the success file was not created
-        File successFile = new File("data/output/success.txt");
-        assertFalse(successFile.exists());
+        File errorDirectory = new File("data/input/error");
+        assertTrue(errorDirectory.exists());
     }
 
     @Test

@@ -38,11 +38,11 @@ public class SimpleCamelRoute extends RouteBuilder {
 
         DataFormat bindy = new BindyCsvDataFormat(Item.class);
 
-//        errorHandler(deadLetterChannel("log:errorInRoute?level=ERROR&showProperties=true")
-//                .maximumRedeliveries(3)
-//                .redeliveryDelay(3000)
-//                .backOffMultiplier(2)
-//                .retryAttemptedLogLevel(LoggingLevel.ERROR));
+        errorHandler(deadLetterChannel("log:errorInRoute?level=ERROR&showProperties=true")
+                .maximumRedeliveries(3)
+                .redeliveryDelay(3000)
+                .backOffMultiplier(2)
+                .retryAttemptedLogLevel(LoggingLevel.ERROR));
 
         onException(DataException.class)
                 .log(LoggingLevel.ERROR, "DataException in the route ${body}");
