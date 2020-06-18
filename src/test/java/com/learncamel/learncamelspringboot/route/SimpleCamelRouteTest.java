@@ -2,6 +2,7 @@ package com.learncamel.learncamelspringboot.route;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,6 +79,28 @@ public class SimpleCamelRouteTest {
         String outputMessage = "Data updated successfully";
         String output = new String(Files.readAllBytes(Paths.get("data/output/success.txt")));
         assertEquals(outputMessage, output);
+    }
+
+    @Test
+    public void testMoveFile_ADD_Exception() throws InterruptedException, IOException {
+        String message = "type,sku#,itemdescription,price\n"
+                + "ADD,,Samsung TV,500\n"
+                + "ADD,101,LG TV,500";
+        String fileName = "fileTest.txt";
+
+        // This starts the route
+        producerTemplate.sendBodyAndHeader(environment.getProperty("fromRoute"), message, Exchange.FILE_NAME, fileName);
+
+        // Wait for the file to be moved
+        Thread.sleep(3000);
+
+        // Assert it was moved successfully
+        File outFile = new File("data/output/" + fileName);
+        assertTrue(outFile.exists());
+
+        // Assert the success file was not created
+        File successFile = new File("data/output/success.txt");
+        assertFalse(successFile.exists());
     }
 
     @Test

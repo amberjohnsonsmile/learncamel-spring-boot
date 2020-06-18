@@ -1,2 +1,2 @@
 type,sku#,itemdescription,price
-DELETE,100,Samsung TV,600
+DELETE,101,LG TV,600
