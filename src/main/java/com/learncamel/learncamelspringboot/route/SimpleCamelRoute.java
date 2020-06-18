@@ -2,12 +2,15 @@ package com.learncamel.learncamelspringboot.route;
 
 import com.learncamel.learncamelspringboot.config.DbConfig;
 import com.learncamel.learncamelspringboot.domain.Item;
+import com.learncamel.learncamelspringboot.exception.DataException;
 import com.learncamel.learncamelspringboot.process.BuildSQLProcessor;
 import com.learncamel.learncamelspringboot.process.SuccessProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
 import org.apache.camel.spi.DataFormat;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -34,6 +37,22 @@ public class SimpleCamelRoute extends RouteBuilder {
         log.info("Starting the camel route");
 
         DataFormat bindy = new BindyCsvDataFormat(Item.class);
+
+//        errorHandler(deadLetterChannel("log:errorInRoute?level=ERROR&showProperties=true")
+//                .maximumRedeliveries(3)
+//                .redeliveryDelay(3000)
+//                .backOffMultiplier(2)
+//                .retryAttemptedLogLevel(LoggingLevel.ERROR));
+
+        onException(DataException.class)
+                .log(LoggingLevel.ERROR, "DataException in the route ${body}");
+
+        onException(PSQLException.class)
+                .log(LoggingLevel.ERROR, "PSQLException in the route ${body}")
+                .maximumRedeliveries(3)
+                .redeliveryDelay(3000)
+                .backOffMultiplier(2)
+                .retryAttemptedLogLevel(LoggingLevel.ERROR);
 
         from("{{startRoute}}")
                 .log("Timer Invoked and the body " + environment.getProperty("message"))

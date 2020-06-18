@@ -17,7 +17,7 @@ public class BuildSQLProcessor implements Processor {
 
         Item item = (Item) exchange.getIn().getBody();
         log.info("Item in Processor is: " + item);
-        String tableName = "ITEMS1";
+        String tableName = "ITEMS";
         
         if (ObjectUtils.isEmpty(item.getSku())) {
             throw new DataException("Sku is null " + item.getItemDescription());
