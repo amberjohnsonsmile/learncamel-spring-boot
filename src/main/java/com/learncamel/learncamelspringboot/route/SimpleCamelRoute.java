@@ -54,7 +54,7 @@ public class SimpleCamelRoute extends RouteBuilder {
                 .backOffMultiplier(2)
                 .retryAttemptedLogLevel(LoggingLevel.ERROR);
 
-        from("{{startRoute}}")
+        from("timer:hello?period=10000")
                 .log("Timer Invoked and the body " + environment.getProperty("message"))
                 .choice()
                     // Really don't like this. We shouldn't have to design the code around the test
@@ -63,7 +63,7 @@ public class SimpleCamelRoute extends RouteBuilder {
                     .otherwise()
                         .log("mock env flow and the body is ${body}")
                     .end()
-                .to("{{toRoute1}}")
+                .to("file:data/output")
                 .unmarshal(bindy)
                 .log("The unmarshalled object is ${body}")
                 .split(body())

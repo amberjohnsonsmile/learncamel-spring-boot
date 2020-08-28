@@ -1,0 +1,2 @@
+type,sku#,itemdescription,price
+DELETE,101,LG TV,600
